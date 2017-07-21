@@ -2,13 +2,14 @@
 import time, sys, os
 import numpy as np
 
-version = 2017013
+version = 2017021
 nt = time.localtime()
 now_time = "%s_%s_%s_%s:%s:%s" % (nt[0],nt[1],nt[2],nt[3],nt[4],nt[5])
 usage    = ' Usage: %s [element1],[element1], lattice constant,  h,k,l \n ' % sys.argv[0]
 foottext = '\n Thank you\n## Yoon Su Shim (KAIST, Graduate School of EEWS) <yoonsushim@kaist.ac.kr>'
 print("## Creating images of absorbate on slab (fcc) using 'pymatgen'")
 print("## Version : %s \n" % version)
+print("## Updated: Write POSCAR format")
 
 print(now_time)
 
@@ -30,6 +31,7 @@ from pymatgen.analysis.adsorption import *
 from pymatgen.core.surface import generate_all_slabs 
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer 
 from matplotlib import pyplot as plt 
+from pymatgen.io.vasp import Poscar
 
 #% matplotlib inline 
 # Note that you must provide your own API Key, which can 
@@ -66,9 +68,10 @@ while (i < len(ads_structs)):
 	ax = fig.add_subplot(111) 
 	plot_slab(ads_structs[i], ax, adsorption_sites=False, decay=0.09)
 	plt.savefig('slab_%s%s_absorb%i.png' % (element1,element2,i))
+	Poscar(ads_structs[i]).write_file('POSCAR_%s%s_absorb%i' % (element1,element2,i))
 	i+=1
 #plt.show()
 
 os.system('mkdir temp')
-os.system('mv *.png temp/')
+os.system('mv POSCAR* *.png temp/')
 os.system('mv temp %s%s_%i%i%i' % (element1,element2,MI[0],MI[1],MI[2]))
