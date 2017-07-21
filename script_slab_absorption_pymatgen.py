@@ -9,15 +9,20 @@ usage    = ' Usage: %s [element1],[element1], lattice constant,  h,k,l \n ' % sy
 foottext = '\n Thank you\n## Yoon Su Shim (KAIST, Graduate School of EEWS) <yoonsushim@kaist.ac.kr>'
 print("## Creating images of absorbate on slab (fcc) using 'pymatgen'")
 print("## Version : %s \n" % version)
+print("## Updated: Read POSCAR format")
 print("## Updated: Write POSCAR format")
 
 print(now_time)
 
 # Check input file
 if len(sys.argv) != 7:
-        print(usage)
-        print(foottext)
-        sys.exit(1)
+	if len(sys.argv) == 2:
+		filename = str(sys.argv[1])
+		print('Reading from structure file ...')
+	else:
+	        print(usage)
+	        print(foottext)
+	        sys.exit(1)
 
 if len(sys.argv) == 7:
 	element1  = sys.argv[1]
@@ -32,6 +37,7 @@ from pymatgen.core.surface import generate_all_slabs
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer 
 from matplotlib import pyplot as plt 
 from pymatgen.io.vasp import Poscar
+from pymatgen.core import IStructure
 
 #% matplotlib inline 
 # Note that you must provide your own API Key, which can 
@@ -40,16 +46,19 @@ mpr = MPRester()
 
 
 #lattice = Lattice.cubic(a0)
+if len(sys.argv) ==7:
+	a0_x = 3.3
+	a0_y = 4.5
+	lattice = Lattice([[a0_x,0,0],[0,a0_y,0],[0,0, a0_x]]) # To describe uniaxial strain
 
-a0_x = 3.3
-a0_y = 4.5
-lattice = Lattice([[a0_x,0,0],[0,a0_y,0],[0,0, a0_x]]) # To describe uniaxial strain
+	structure = Structure(lattice, [element1,element1,element1,element2], [[0, 0, 0], [0.5, 0.5, 0.0],[0, 0.5,0.5],[0.5,0,0.5]])
+	#structure = Structure.from_spacegroup("Fm-3m", lattice, [element1, element2], [[0, 0, 0], [0.5, 0.5, 0.5]])
+	slabs = generate_all_slabs(structure, max_index=1, min_slab_size=8.0, min_vacuum_size=10.0)
+	metal_ml = [slab for slab in slabs if slab.miller_index==MI][0]
 
-structure = Structure(lattice, [element1,element1,element1,element2], [[0, 0, 0], [0.5, 0.5, 0.0],[0, 0.5,0.5],[0.5,0,0.5]])
-#structure = Structure.from_spacegroup("Fm-3m", lattice, [element1, element2], [[0, 0, 0], [0.5, 0.5, 0.5]])
-slabs = generate_all_slabs(structure, max_index=1, min_slab_size=8.0, min_vacuum_size=10.0)
-
-metal_ml = [slab for slab in slabs if slab.miller_index==MI][0]
+#if len(sys.argv) ==2: 
+#	metal_ml = IStructure.from_file(filename)
+#
 asf_metal_ml = AdsorbateSiteFinder(metal_ml) 
 ads_sites = asf_metal_ml.find_adsorption_sites() 
 assert len(ads_sites) == 4
