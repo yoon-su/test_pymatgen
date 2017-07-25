@@ -56,9 +56,10 @@ if len(sys.argv) ==7:
 	slabs = generate_all_slabs(structure, max_index=1, min_slab_size=8.0, min_vacuum_size=10.0)
 	metal_ml = [slab for slab in slabs if slab.miller_index==MI][0]
 
-#if len(sys.argv) ==2: 
-#	metal_ml = IStructure.from_file(filename)
-#
+if len(sys.argv) ==2: 
+	metal_ml = IStructure.from_file(filename)
+	print(metal_ml)#
+
 asf_metal_ml = AdsorbateSiteFinder(metal_ml) 
 ads_sites = asf_metal_ml.find_adsorption_sites() 
 assert len(ads_sites) == 4
