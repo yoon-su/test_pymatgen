@@ -70,7 +70,7 @@ plot_slab(metal_ml, ax, adsorption_sites=True)
 plt.savefig('slab_%s%s_site.png' % (element1,element2))
 
 adsorbate = Molecule("H", [[0, 0, 0]]) 
-ads_structs = asf_metal_ml.generate_adsorption_structures(adsorbate, repeat=[1, 1, 1])
+ads_structs = asf_metal_ml.generate_adsorption_structures(adsorbate, repeat=[2, 2, 1])
 
 i=0
 while (i < len(ads_structs)):
