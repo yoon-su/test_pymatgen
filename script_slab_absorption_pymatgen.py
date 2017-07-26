@@ -47,10 +47,10 @@ mpr = MPRester()
 
 #lattice = Lattice.cubic(a0)
 if len(sys.argv) ==7:
-	a0_x = 3.3
-	a0_y = 4.5
-	lattice = Lattice([[a0_x,0,0],[0,a0_y,0],[0,0, a0_x]]) # To describe uniaxial strain
-
+	#a0_x = 3.3
+	#a0_y = 4.5
+	#lattice = Lattice([[a0_x,0,0],[0,a0_y,0],[0,0, a0_x]]) # To describe uniaxial strain
+	lattice = Lattice.cubic(a0)
 	structure = Structure(lattice, [element1,element1,element1,element2], [[0, 0, 0], [0.5, 0.5, 0.0],[0, 0.5,0.5],[0.5,0,0.5]])
 	#structure = Structure.from_spacegroup("Fm-3m", lattice, [element1, element2], [[0, 0, 0], [0.5, 0.5, 0.5]])
 	slabs = generate_all_slabs(structure, max_index=1, min_slab_size=8.0, min_vacuum_size=10.0)
