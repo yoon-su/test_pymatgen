@@ -2,14 +2,14 @@
 import time, sys, os
 import numpy as np
 
-version = 20170802
+version = 20170804
 nt = time.localtime()
 now_time = "%s_%s_%s_%s:%s:%s" % (nt[0],nt[1],nt[2],nt[3],nt[4],nt[5])
 usage    = ' Usage: %s [element1],[element2], lattice constant,  h,k,l \n ' % sys.argv[0]
 foottext = '\n Thank you\n## Yoon Su Shim (KAIST, Graduate School of EEWS) <yoonsushim@kaist.ac.kr>'
 print("## Creating images of absorbate on slab (fcc) using 'pymatgen'")
 print("## Version : %s \n" % version)
-print("## Updated: combine with ASE for molecule database and A2P2")
+print("## Updated: combind with ASE for molecule database and A2P2")
 
 print(now_time)
 
@@ -69,26 +69,30 @@ plot_slab(metal_ml, ax, adsorption_sites=True)
 plt.savefig('slab_%s%s_site.png' % (element1,element2))
 
 from ase.build import molecule as asemole
-h  = Molecule("H", [[0,0,0]])
-o  = Molecule("O", [[0,0,0]])
-o2 = Molecule("OO", [[0, 0, 0],[0,0,1.2]]) 
-oh = Molecule("OH", [[0, 0, 0], [-0.793, 0.384, 0.422]])
-ooh = Molecule("OOH", [[0, 0, 0], [-1.067, -0.403, 0.796], [-0.696, -0.272, 1.706]])
 
-h2o2_ase      = asemole('H2O2') ## from "ASE" databases
-h2o2_position = h2o2_ase.get_positions()
-h2o2_species  = h2o2_ase.get_chemical_symbols()
-h2o2_sp       = h2o2_species[0]+h2o2_species[1]+h2o2_species[2]+h2o2_species[3]
-h2o2          = Molecule(h2o2_sp,h2o2_position)
+def molecule_ase_to_pymatgen(species):
+        # from ASE database import molecule structures
+        molecule_ase      = asemole(species)
+        molecule_position = molecule_ase.get_positions()
+        molecule_species  = molecule_ase.get_chemical_symbols()
+        molecule_name     = ''
+        for species_name in molecule_species:
+                molecule_name +=species_name
+        molecule          = Molecule(molecule_name, molecule_position)
+        return molecule
 
-h2o_ase      = asemole('H2O') ## from "ASE" databases
-h2o_position = h2o_ase.get_positions()
-h2o_species  = h2o_ase.get_chemical_symbols()
-h2o_sp       = h2o_species[0]+h2o_species[1]+h2o_species[2]
-h2o          = Molecule(h2o_sp,h2o_position)
+h    = Molecule("H", [[0,0,0]])
+o    = Molecule("O", [[0,0,0]])
+o2   = molecule_ase_to_pymatgen('O2')
+oh   = molecule_ase_to_pymatgen('OH')
+#o2  = Molecule("OO", [[0, 0, 0],[0,0,1.2]]) 
+#oh  = Molecule("OH", [[0, 0, 0], [-0.793, 0.384, 0.422]])
+ooh  = Molecule("OOH", [[0, 0, 0], [-1.067, -0.403, 0.796], [-0.696, -0.272, 1.706]])
+h2o2 = molecule_ase_to_pymatgen('H2O2')
+h2o  = molecule_ase_to_pymatgen('H2O')
+
 adsorbates =[h,o,o2,oh,ooh,h2o2,h2o] 
 
-#adsorbate = Molecule("OO", [[0, 0, 0],[0,0,1.2]]) 
 for adsorbate in adsorbates:
         print(adsorbate)
         ads_structs = asf_metal_ml.generate_adsorption_structures(adsorbate, repeat=[2, 2, 1])
